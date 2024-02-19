@@ -13,12 +13,14 @@ class Config:
 
 
 class NGramModel(torch.nn.Module):
-    def __init__(self, len_seq, vocab_size, n_embedding, hidden=200):
+    def __init__(self, config:Config):
         super().__init__()
-        self.embedding = torch.nn.Embedding(vocab_size, n_embedding)
-        self.linear1 = torch.nn.Linear(len_seq*n_embedding, hidden)
+        self.embedding = torch.nn.Embedding(
+            config.vocab_size, config.n_embedding)
+        self.linear1 = torch.nn.Linear(
+            config.len_seq*config.n_embedding, config.hidden)
         self.tanh1 = torch.nn.Tanh()
-        self.linear2 = torch.nn.Linear(hidden, vocab_size)
+        self.linear2 = torch.nn.Linear(config.hidden, config.vocab_size)
         self.soft = torch.nn.Softmax()
 
     def forward(self, x):
@@ -31,12 +33,14 @@ class NGramModel(torch.nn.Module):
 
 
 class Bigram(torch.nn.Module):
-    def __init__(self, vocab_size,chars):
+    def __init__(self, config:Config,chars):
         super().__init__()
-        self.weight_matrix = torch.zeros((vocab_size, vocab_size))
-        self.vocab_size = vocab_size
-        self.occurence_ratio = torch.zeros((vocab_size, vocab_size))
-        self.chars=chars
+        self.weight_matrix = torch.zeros(
+            (config.vocab_size, config.vocab_size))
+        self.vocab_size = config.vocab_size
+        self.occurence_ratio = torch.zeros(
+            (config.vocab_size, config.vocab_size))
+        self.chars=config.chars
     def __call__(self, X):
         for i, j in zip(X[:-1], X[1:]):
             self.weight_matrix[i][j] += 1
