@@ -1,2 +1,3 @@
 # AI-dam-mickiewicz
-adam mickiewicz generator based on deep neural networks
+AI-dam-mickiewicz generate text in style of "Pan Tadeusz" based on deep neutral networks
+
