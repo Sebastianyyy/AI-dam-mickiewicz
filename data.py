@@ -35,7 +35,6 @@ class DataPreparation:
     def build_datasets(self):
         file_path = os.path.join(os.path.dirname(__file__), self.path_name)
         def download():
-            
             if not os.path.exists(file_path):
                 r = requests.get("https://raw.githubusercontent.com/Poeci/project/master/pan-tadeusz.txt")
                 with open(file_path,'wb') as f:

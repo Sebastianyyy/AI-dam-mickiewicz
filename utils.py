@@ -24,7 +24,7 @@ def train_one_epoch(model,criterion,train_loader,optimizer,device,epoch):
         running_loss += loss.item()
         
         if i % 300 == 299:
-            last_loss = running_loss/300  # loss per batch
+            last_loss = running_loss/300  
             print(f'Epoch {epoch} batch {i+1} loss: {last_loss}')
             running_loss = 0.
 
