@@ -12,7 +12,7 @@ class TransformerModel(torch.nn.Module):
         self.out = torch.nn.Linear(
             config.embedding_dim, config.vocab_size, bias=False)
         self.pos = self.positional_encoder(
-            config.embedding_dim, config.seq_len)
+            config.embedding_dim, config.seq_len).to(config.device)
 
     def positional_encoder(self, embedding_dim, seq_len):
         div_term = torch.exp(torch.arange(0, embedding_dim, 2)

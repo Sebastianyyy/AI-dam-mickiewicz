@@ -25,15 +25,15 @@ def train_one_epoch(model,criterion,train_loader,optimizer,device,epoch):
         optimizer.step()
         running_loss += loss.item()
         
-        if i % 300 == 299:
-            last_loss = running_loss/300  
+        if i % 500 == 499:
+            last_loss = running_loss/500  
             print(f'Epoch {epoch} batch {i+1} loss: {last_loss}')
             running_loss = 0.
 
 
 @torch.no_grad()
 def evaluate(model,data_loader,device):
-    model.eval(True)
+    model.eval()
     criterion = torch.nn.CrossEntropyLoss()
     running_loss = 0.
     cumulative_loss=[]
@@ -43,9 +43,12 @@ def evaluate(model,data_loader,device):
         inputs = inputs.to(device)
         labels = labels.to(device)
 
-        outputs = model(inputs)[:, -1, :]
-
-        loss = criterion(outputs, labels)
+        outputs = model(inputs)
+        if isinstance(model, NGram):
+            labels = labels[:, -1]
+        else:
+            labels = labels.view(-1)
+        loss = criterion(outputs.view(-1, outputs.size(-1)), labels)
 
         running_loss += loss.item()
         cumulative_loss.append(loss.item())

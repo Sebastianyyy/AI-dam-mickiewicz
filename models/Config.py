@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+import torch
 @dataclass
 class Config:
     seq_len: int
@@ -10,3 +10,4 @@ class Config:
     n_layers: int
     n_head: int
     batch_size: int
+    device: torch.device
