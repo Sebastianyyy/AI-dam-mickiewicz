@@ -1,11 +1,10 @@
 import torch
 import math
 from einops import rearrange
-import Config
 
 class TransformerModel(torch.nn.Module):
 
-    def __init__(self, config: Config):
+    def __init__(self, config):
         super().__init__()
         self.emb = torch.nn.Embedding(config.vocab_size, config.embedding_dim)
         self.encoders = torch.nn.ModuleList(
@@ -31,6 +30,9 @@ class TransformerModel(torch.nn.Module):
             x = enc(x)
         logits = self.out(x)
         return logits
+    @torch.no_grad()
+    def sample(self,text,l,temperature):
+        return NotImplemented
 
 
 class Encoder(torch.nn.Module):

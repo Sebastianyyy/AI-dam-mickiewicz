@@ -3,23 +3,26 @@ import data
 from torch.utils.data import DataLoader
 from utils import train_one_epoch, evaluate, load_model_from_path, save_model_to_path
 import torch
-from models import BiGram,NGram,TransformerDecoder,RNN,Config
+from models import BiGram,NGram,RNN,Config, TransformerModel
 from timm.optim.optim_factory import create_optimizer
 
 
 def get_args_parser():
-    parser = argparse.ArgumentParser("AdamMickiewicz training and evaluation")
+    parser = argparse.ArgumentParser(
+        "AdamMickiewicz training and evaluation", add_help=False)
     
     parser.add_argument("--batch-size", action="store",default=64)
     parser.add_argument("--epochs", action="store", default=10)
 
-    parser.add_argument("--model", choices=['bigram', 'ngram','transformer','rnn'],default="rnn")
+    parser.add_argument(
+        "--model", choices=['bigram', 'ngram', 'transformer', 'rnn'], default="ngram")
     parser.add_argument("--dropout", action="store", default="0.2")
 
 
     parser.add_argument("--opt",default="adam")
     parser.add_argument("--lr", action="store", default=0.001)
-
+    parser.add_argument("--weight-decay",action="store",default=0)
+    parser.add_argument("--momentum",action="store",default=0)
 
     parser.add_argument("--train",action="store_true")
     parser.add_argument("--sample",action="store_true")
@@ -35,12 +38,12 @@ def get_args_parser():
     parser.add_argument("--resume", action="store", default='')
     
     
-    parser.add_argument("--embedding-dim", action="store", default="36")
+    parser.add_argument("--embedding-dim", action="store", default=36)
     parser.add_argument("--num-blocks",action="store",default=4)
-    parser.add_argument("--seq-len", action="store", default="8")
-    parser.add_argument("--n-head", action="store", default="8")
-    parser.add_argument("--n-layers", action="store", default="2")
-    parser.add_argument("--hidden", action="store", default="32")
+    parser.add_argument("--seq-len", action="store", default=8)
+    parser.add_argument("--n-head", action="store", default=8)
+    parser.add_argument("--n-layers", action="store", default=2)
+    parser.add_argument("--hidden", action="store", default=32)
 
 
     return parser
@@ -53,22 +56,20 @@ def main(args):
     device=torch.device(args.device)
     torch.manual_seed(3213)
 
-    data_obj=data.DataPreparation(args.data_path)
+    data_obj=data.DataPreparationCharacterLevel(args.data_path)
 
     train, val, test = data_obj.build_datasets()
-
-    train_dataloader = DataLoader(train, batch_size=args.batch_size,drop_last=True)
-
+    
+    train_dataloader = DataLoader(
+        data.MickiewiczDataSetChar(train,args.seq_len), batch_size=args.batch_size, drop_last=True)
     val_dataloader = DataLoader(
-        val, batch_size=args.batch_size, drop_last=True)
+        data.MickiewiczDataSetChar(val, args.seq_len), batch_size=args.batch_size, drop_last=True)
 
     test_dataloader = DataLoader(
-        test, batch_size=args.batch_size, drop_last=True)
+        data.MickiewiczDataSetChar(test, args.seq_len), batch_size=args.batch_size, drop_last=True)
     
-    conf=Config(seq_len=args.seq_len,vocab_size=None,embedding_dim=args.embedding_dim,dropout=args.dropout, batch_size=args.batch_size,
-                n_head=args.n_head,hidden=args.hidden,n_layers=args.n_layers)
-
-    models = {'bigram':BiGram, 'ngram':NGram, 'transformer':TransformerDecoder, 'rnn':RNN}
+    conf=Config.Config(seq_len=args.seq_len,vocab_size=data_obj.get_vocab_size(),embedding_dim=args.embedding_dim,dropout=args.dropout, batch_size=args.batch_size, n_head=args.n_head,hidden=args.hidden,n_layers=args.n_layers)
+    models = {'bigram':BiGram.Bigram, 'ngram':NGram.NGram, 'transformer':TransformerModel.TransformerModel, 'rnn':RNN.RNN}
     model=models[args.model](conf)
     
     criterion = torch.nn.CrossEntropyLoss()
@@ -80,8 +81,9 @@ def main(args):
         
     model=model.to(args.device)
     
-    if args.train:
-        for epoch in range(args.epoch):
+    
+    if True:
+        for epoch in range(args.epochs):
             model.train(True) 
             train_one_epoch(model=model,criterion=criterion,train_loader=train_dataloader,optimizer=optimizer,device=args.device,epoch=epoch)
             model.eval(True)
@@ -96,7 +98,6 @@ def main(args):
     
     if args.save_path:
         save_model_to_path(model=model,name=args.save_path)
-
         
         
 if __name__=='__main__':

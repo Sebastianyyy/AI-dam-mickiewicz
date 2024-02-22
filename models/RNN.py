@@ -1,20 +1,26 @@
 import torch
-import Config
 
 class RNN(torch.nn.Module):
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config) -> None:
         super().__init__()
         self.emb = torch.nn.Embedding(config.vocab_size, config.embedding_dim)
         self.RNNCell = RNNCell(config=config)
+        self.lin_out = torch.nn.Linear(config.vocab_size, config.vocab_size)
 
     def forward(self, X):
         X = self.emb(X)
-        logits = RNNCell(X)
+        out = self.RNNCell(X)
+        logits=self.lin_out(out)
+        return logits
+
+    @torch.no_grad()
+    def sample(self, text, l, temperature):
+        return NotImplemented
 
 
 class RNNCell(torch.nn.Module):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config) -> None:
         super().__init__()
         self.hidden_size = config.hidden
         self.batch_size = config.batch_size
@@ -34,4 +40,5 @@ class RNNCell(torch.nn.Module):
             self.h = xh+hh
             out = self.wyh(self.h)
             output.append(out)
-        return torch.stack(output, dim=1)
+        out=torch.stack(output, dim=1)
+        return out

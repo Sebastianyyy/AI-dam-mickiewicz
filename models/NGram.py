@@ -1,8 +1,7 @@
 import torch
-import Config
 
-class NGramModel(torch.nn.Module):
-    def __init__(self, config: Config):
+class NGram(torch.nn.Module):
+    def __init__(self, config):
         super().__init__()
         self.embedding = torch.nn.Embedding(
             config.vocab_size, config.embedding_dim)
@@ -19,3 +18,7 @@ class NGramModel(torch.nn.Module):
         tanh = self.tanh1(val)
         logits = self.linear2(tanh)
         return logits
+
+    @torch.no_grad()
+    def sample(self, text, l, temperature):
+        return NotImplemented

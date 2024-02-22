@@ -6,10 +6,10 @@ from torch.utils.data import Dataset
 class DataPreparationCharacterLevel:
     chars_dict=None
     numbers_dict=None
-    def __init__(self,path_name=input.txt):
+    def __init__(self,path_name="input.txt"):
         self.data=None
         self.path_name=path_name
-    
+        self.vocab_size=0
     def prepare_data(self):
         chars = sorted(list(set(self.data)))
         counts_of_elements = {ch: self.data.count(ch) for ch in chars}
@@ -27,7 +27,8 @@ class DataPreparationCharacterLevel:
     @classmethod
     def encode(cls, text):
         return [cls.chars_dict[i] for i in text]
-
+    def get_vocab_size(self):
+        return self.vocab_size
     def split(self):
         l = len(self.data)
         return self.data[:int(l*0.98)], self.data[int(l*0.98):int(l*0.99)], self.data[int(l*0.99):]
@@ -53,8 +54,11 @@ class DataPreparationCharacterLevel:
             v: k for k, v in enumerate(chars)}
         DataPreparationCharacterLevel.numbers_dict = {
             k: v for k, v in enumerate(chars)}
+        self.vocab_size = len(set(self.data))
+
         return train,val,test
                 
+
 class MickiewiczDataSetChar(Dataset):
     def __init__(self,data,len_seq) -> None:
         self.data=data

@@ -1,8 +1,7 @@
 import torch
-import Config
 
 class Bigram(torch.nn.Module):
-    def __init__(self, config: Config, chars):
+    def __init__(self, config, chars):
         super().__init__()
         self.weight_matrix = torch.zeros(
             (config.vocab_size, config.vocab_size))
@@ -43,3 +42,6 @@ class Bigram(torch.nn.Module):
         length_sequence = X.size(dim=0)
         probs = torch.sum(torch.log(self.occurence_ratio[X, y]))
         return -probs/length_sequence
+    @torch.no_grad()
+    def sample(self, text, l, temperature):
+        return NotImplemented

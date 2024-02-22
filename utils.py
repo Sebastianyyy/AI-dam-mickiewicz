@@ -1,8 +1,7 @@
 import torch
 import numpy as np
 import os
-from models import NGramModel,Bigram
-
+from models.NGram import NGram
 
 def train_one_epoch(model,criterion,train_loader,optimizer,device,epoch):
     running_loss = 0.
@@ -15,9 +14,12 @@ def train_one_epoch(model,criterion,train_loader,optimizer,device,epoch):
         labels=labels.to(device)
 
         optimizer.zero_grad()
-        outputs = model(inputs)[:, -1, :]
-        
-        loss = criterion(outputs, labels)
+        outputs = model(inputs)
+        if isinstance(model,NGram):
+            labels=labels[:,-1]
+        else:
+            labels=labels.view(-1)
+        loss = criterion(outputs.view(-1, outputs.size(-1)), labels)
         loss.backward()
         
         optimizer.step()
