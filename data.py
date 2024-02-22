@@ -3,7 +3,7 @@ import requests
 import re
 import torch
 from torch.utils.data import Dataset
-class DataPreparation:
+class DataPreparationCharacterLevel:
     chars_dict=None
     numbers_dict=None
     def __init__(self,path_name=input.txt):
@@ -49,11 +49,13 @@ class DataPreparation:
         
         train, val, test = self.split()
         chars = sorted(list(set(self.data)))
-        DataPreparation.chars_dict = {v: k for k, v in enumerate(chars)}
-        DataPreparation.numbers_dict = {k: v for k, v in enumerate(chars)}
+        DataPreparationCharacterLevel.chars_dict = {
+            v: k for k, v in enumerate(chars)}
+        DataPreparationCharacterLevel.numbers_dict = {
+            k: v for k, v in enumerate(chars)}
         return train,val,test
                 
-class MickiewiczDataSet(Dataset):
+class MickiewiczDataSetChar(Dataset):
     def __init__(self,data,len_seq) -> None:
         self.data=data
         self.len_seq=len_seq
@@ -62,7 +64,8 @@ class MickiewiczDataSet(Dataset):
         return len(self.data)-self.len_seq
     
     def __getitem__(self, index):
-        encoded = DataPreparation.encode(self.data[index:index+self.len_seq+1])
+        encoded = DataPreparationCharacterLevel.encode(
+            self.data[index:index+self.len_seq+1])
         features = torch.tensor(encoded[0:-1])
         target = torch.tensor(encoded[1:])
         return features, target

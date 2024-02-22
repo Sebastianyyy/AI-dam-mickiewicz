@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import os
-from model import NGramModel,Bigram
+from models import NGramModel,Bigram
 
 
 def train_one_epoch(model,criterion,train_loader,optimizer,device,epoch):
@@ -55,10 +55,16 @@ def evaluate(model,data_loader,device):
 
 
 
-def load_model_from_path(model,name,device):
-    file_path = os.path.join(os.path.dirname(__file__), name)
-    model.load_state_dict(torch.load(file_path, map_location=device))
-
+def load_model_from_path(model,name):
+    try:
+        
+        file_path = os.path.join(os.path.dirname(__file__), name)
+        #model.load_state_dict(torch.load(file_path, map_location="cpu"))
+        checkpoint = torch.load(file_path, map_location='cpu')
+        model.load_state_dict(checkpoint['model_state_dict'])
+    except:
+        print("Unsucesfully loading model from path")
+        
 def save_model_to_path(model,name):
     file_path = os.path.join(os.path.dirname(__file__), name)
-    torch.save(model.state_dict(), file_path)
+    torch.save({'model_state_dict': model.state_dict()}, file_path)
