@@ -20,5 +20,7 @@ Repository contains only character level language, but in future i will try to i
 
 References : 
 https://github.com/karpathy/nanoGPT
+
 https://github.com/lucidrains/
+
 https://nlp.seas.harvard.edu/2018/04/03/attention.html
