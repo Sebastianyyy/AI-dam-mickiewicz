@@ -19,6 +19,7 @@ TO DO:
 Repository contains only character level language, but in future i will try to implement Byte-Pair encoding. It can influence in bad results too.
 
 References : 
+
 https://github.com/karpathy/nanoGPT
 
 https://github.com/lucidrains/
