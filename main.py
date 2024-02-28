@@ -11,11 +11,11 @@ def get_args_parser():
     parser = argparse.ArgumentParser(
         "AdamMickiewicz training and evaluation", add_help=False)
     
-    parser.add_argument("--batch-size", action="store", type=int, default=64)
+    parser.add_argument("--batch-size", action="store", type=int, default=256)
     parser.add_argument("--epochs", action="store",type=int, default=10)
 
     parser.add_argument(
-        "--model", choices=['bigram', 'ngram', 'transformer', 'rnn'], default="ngram")
+        "--model", choices=['bigram', 'ngram', 'transformer', 'rnn'], default="transformer")
     parser.add_argument("--dropout", action="store",type=float, default="0.2")
 
 
@@ -38,9 +38,9 @@ def get_args_parser():
     parser.add_argument("--resume", action="store", default='')
     
     
-    parser.add_argument("--embedding-dim",type=int, action="store", default=36)
-    parser.add_argument("--num-blocks", type=int, action="store", default=4)
-    parser.add_argument("--seq-len", type=int, action="store", default=8)
+    parser.add_argument("--embedding-dim",type=int, action="store", default=32)
+    parser.add_argument("--num-blocks", type=int, action="store", default=2)
+    parser.add_argument("--seq-len", type=int, action="store", default=12)
     parser.add_argument("--n-head", type=int, action="store", default=8)
     parser.add_argument("--n-layers", type=int, action="store", default=2)
     parser.add_argument("--hidden", type=int, action="store", default=32)
